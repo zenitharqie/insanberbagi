@@ -1,0 +1,13 @@
+flutter_native_splash:
+  android: true
+  ios: true
+  web: false
+  color: "#1a2734"
+  image: "assets/images/insanberbagi.png"
+  branding: assets/branding-production.png
+  fullscreen: true
+  android12:
+    image: assets/images/insanberbagi.png
+    icon_background_color: "#ffffff"
+    image_dark: assets/images/insanberbagi.png
+    icon_background_color_dark: "#121212"
