@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import 'login_screen.dart';
 
@@ -10,7 +11,7 @@ class RegisterPage extends StatefulWidget {
   @override
   State<RegisterPage> createState() => _RegisterPageState();
 }
-basbusd
+
 
 class _RegisterPageState extends State<RegisterPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -19,6 +20,8 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _confirmPasswordController = TextEditingController();
+  TextEditingController _phoneController = TextEditingController();
+  TextEditingController _addressController = TextEditingController();
   var db = FirebaseFirestore.instance;
 
   @override
@@ -40,7 +43,7 @@ class _RegisterPageState extends State<RegisterPage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _header(context),
-              _inputField(context),
+              Expanded(child: _inputField(context)),
             ],
           ),
         ),
@@ -63,8 +66,9 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget _inputField(context) {
     return Form(
       key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+      child: ListView(
+        shrinkWrap: true,
+        scrollDirection: Axis.vertical,
         children: [
           TextFormField(
             controller: _nameController,
@@ -106,6 +110,46 @@ class _RegisterPageState extends State<RegisterPage> {
                   RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value);
               if (!validEmail) {
                 return 'Please enter a valid email';
+              }
+              return null;
+            },
+          ),
+          SizedBox(height: 10),
+          TextFormField(
+            controller: _phoneController,
+            decoration: InputDecoration(
+              hintText: "Phone Number",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide.none,
+              ),
+              fillColor: Colors.green.withOpacity(0.12),
+              filled: true,
+              prefixIcon: Icon(Icons.phone),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a phone number';
+              }
+              return null;
+            },
+          ),
+          SizedBox(height: 10),
+          TextFormField(
+            controller: _addressController,
+            decoration: InputDecoration(
+              hintText: "Address",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide.none,
+              ),
+              fillColor: Colors.green.withOpacity(0.12),
+              filled: true,
+              prefixIcon: Icon(Icons.location_on),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a address';
               }
               return null;
             },
@@ -164,7 +208,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   db.collection("users").doc(value.user!.uid).set({
                     "email": _emailController.text,
                     "username": _nameController.text,
-                    "password": _passwordController.text
+                    "phone": _phoneController.text,
+                    "address": _addressController.text,
                   });
                   Navigator.pushAndRemoveUntil(
                     context,
