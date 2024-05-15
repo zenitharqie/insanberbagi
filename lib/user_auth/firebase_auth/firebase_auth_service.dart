@@ -49,7 +49,7 @@ class FirebaseAuthService {
 
   Future<void> changeUserData(String field, newValue) async {
     await FirebaseFirestore.instance
-        .collection('Users')
+        .collection('users')
         .doc(getCurrentUserUid())
         .update({
       field: newValue,
