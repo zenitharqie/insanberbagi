@@ -18,7 +18,7 @@ class HomeScreen extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(primaryColor: Colors.red),
       debugShowCheckedModeBanner: false,
-      initialRoute: '/login', // Set initial route
+      initialRoute: '/login', 
       routes: {
         '/login': (context) => LoginPage(),
       },

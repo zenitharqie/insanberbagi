@@ -3,64 +3,92 @@ import 'package:insanberbagi/models/news_model.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-class beritaterkini extends StatefulWidget {
-  beritaterkini(this.data, {Key? key}) : super(key:key);
-  NewsData data;
+class Beritaterkini extends StatefulWidget {
+  Beritaterkini(this.data, {Key? key}) : super(key: key);
+  final NewsData data;
+
   @override
-  State<beritaterkini> createState() => _MyWidgetState();
+  State<Beritaterkini> createState() => _BeritaterkiniState();
 }
 
-class _MyWidgetState extends State<beritaterkini> {
+class _BeritaterkiniState extends State<Beritaterkini> {
   @override
   Widget build(BuildContext context) {
+    
     return Container(
       width: double.infinity,
-      margin: EdgeInsets.only(
-        bottom:20),
-        padding: EdgeInsets.all(12),
-        height: 130,
-        decoration: BoxDecoration(
-          color: Colors.green,
-          borderRadius: BorderRadius.circular(26)
-        ),
-
-    child: Row(
-      children: [
-        Flexible(
-          flex: 3,
-          child: Container(
-          height: 100,
-          decoration: 
-          BoxDecoration(
-            borderRadius: BorderRadius.circular(16) ,
-            image: 
-            DecorationImage(
-              image: NetworkImage(widget.data.urlToImage!),
-              fit: BoxFit.fitHeight
-              )
+      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+      padding: EdgeInsets.all(12),
+      height: 150,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(26),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            spreadRadius: 2,
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Flexible(
+            flex: 3,
+            child: Container(
+              height: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                image: DecorationImage(
+                  image: NetworkImage(widget.data.urlToImage!),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  gradient: LinearGradient(
+                    colors: [Colors.transparent, Colors.black.withOpacity(0.6)],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
-
-        SizedBox(
-          width: 10,
-        ),
-
-        Flexible(
-          flex: 5,
-          child: Column(
-            children: [
-              Text(widget.data.title!,style: TextStyle(color: Colors.black,fontWeight: FontWeight.bold),
-              ),
-          SizedBox(height: 8),
-          Text(widget.data.content!,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(color: Colors.black))
-            ]
-          )
-        )
-      ],
-    ),
-  );
-}
+          SizedBox(width: 10),
+          Flexible(
+            flex: 5,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.data.title!,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 8),
+                Text(
+                  widget.data.content!,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                  ),
+                  maxLines: 5,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

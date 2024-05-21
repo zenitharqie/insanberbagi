@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:insanberbagi/components/berita.dart';
 import 'package:insanberbagi/components/berita_terkini.dart';
@@ -7,9 +8,6 @@ import 'package:insanberbagi/models/news_model.dart';
 import 'package:insanberbagi/screen/profile.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:carousel_slider/carousel_controller.dart';
-
-
-
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -20,7 +18,45 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  int activeindex = 0;
+  int activeIndex = 0;
+  String? username;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUsernameAndShowGreeting();
+  }
+
+  void _fetchUsernameAndShowGreeting() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc =
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      setState(() {
+        username = userDoc['username'] ?? 'Anonymous';
+      });
+      if (username != null) {
+        _showGreetingSnackBar(username!);
+      }
+    }
+  }
+
+  void _showGreetingSnackBar(String username) {
+    final snackBar = SnackBar(
+      content: Text(
+        'Hello $username!',
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      ),
+      backgroundColor: Colors.green,
+      behavior: SnackBarBehavior.floating,
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      duration: Duration(seconds: 3),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -95,14 +131,48 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-              // sync ke berita Terkini
+              // TabBar and TabBarView
               SizedBox(height: 20),
-              Column(
-                children: NewsData.recentNewsData
-                    .map((e) => beritaterkini(e))
-                    .toList(),
+              DefaultTabController(
+                length: 3,
+                child: Column(
+                  children: [
+                    TabBar(
+                      labelColor: Colors.black,
+                      unselectedLabelColor: Colors.grey,
+                      indicatorColor: Colors.green,
+                      tabs: [
+                        Tab(text: "Recent"),
+                        Tab(text: "Popular"),
+                        Tab(text: "Trending"),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 510, // Adjust the height as needed
+                      child: TabBarView(
+                        children: [
+                          Column(
+                            children: NewsData.recentNewsData
+                                .map((e) => Beritaterkini(e))
+                                .toList(),
+                          ),
+                          Column(
+                            children: NewsData.recentNewsData
+                                .map((e) => Beritaterkini(e))
+                                .toList(),
+                          ),
+                          Column(
+                            children: NewsData.recentNewsData
+                                .map((e) => Beritaterkini(e))
+                                .toList(),
+                          )
+          
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              
             ],
           ),
         ),
@@ -110,3 +180,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+

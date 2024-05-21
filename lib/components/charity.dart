@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:insanberbagi/components/berita.dart';
-import 'package:insanberbagi/components/berita_terkini.dart';
-import 'package:insanberbagi/models/charity_model.dart';
-import 'package:insanberbagi/models/news_model.dart';
-import 'package:insanberbagi/screen/profile.dart';
 import 'package:insanberbagi/components/charity_detail.dart';
-
+import 'package:insanberbagi/models/charity_model.dart';
 
 class Charity extends StatefulWidget {
   Charity(this.data, {Key? key}) : super(key: key);
@@ -22,60 +17,84 @@ class _CharityState extends State<Charity> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => Charitydetail()),
+          MaterialPageRoute(
+            builder: (context) => CharityDetail(), // Pass the postId here
+          ),
         );
       },
       child: Container(
         width: double.infinity,
-        margin: EdgeInsets.only(bottom: 20),
+        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
         padding: EdgeInsets.all(12),
-        height: 200, 
+        height: 200,
         decoration: BoxDecoration(
-          color: Colors.green,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              spreadRadius: 2,
+              blurRadius: 8,
+              offset: Offset(0, 4),
+            ),
+          ],
         ),
         child: Row(
           children: [
             Flexible(
               flex: 3,
               child: Container(
-                height: 100,
+                height: double.infinity,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(15),
                   image: DecorationImage(
                     image: NetworkImage(widget.data.urlToImage!),
-                    fit: BoxFit.fitHeight,
-                    
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    gradient: LinearGradient(
+                      colors: [Colors.transparent, Colors.black.withOpacity(0.6)],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
                   ),
                 ),
               ),
             ),
-            SizedBox(
-              width: 10,
-            ),
+            SizedBox(width: 10),
             Flexible(
               flex: 5,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     widget.data.title!,
-                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
                   SizedBox(height: 8),
                   Text(
                     widget.data.content!,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: Colors.black),
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                    ),
                   ),
-                  SizedBox(height: 5),
+                  SizedBox(height: 8),
                   Row(
                     children: [
                       Expanded(
                         child: LinearProgressIndicator(
                           value: widget.data.progress / 100,
-                          backgroundColor: Colors.black,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          backgroundColor: Colors.grey.shade300,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
                         ),
                       ),
                       SizedBox(width: 5),
@@ -85,10 +104,14 @@ class _CharityState extends State<Charity> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 5),
+                  SizedBox(height: 8),
                   Text(
                     '${widget.data.uang}',
-                    style: TextStyle(color: Colors.black),
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ],
               ),
@@ -99,5 +122,4 @@ class _CharityState extends State<Charity> {
     );
   }
 }
-
 

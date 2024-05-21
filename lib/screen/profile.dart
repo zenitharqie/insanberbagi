@@ -7,8 +7,9 @@ import 'package:insanberbagi/user_auth/firebase_auth/firebase_auth_service.dart'
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark));
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.dark,
+  ));
   runApp(const Profile());
 }
 
@@ -22,6 +23,11 @@ class Profile extends StatelessWidget {
       title: 'User Profile',
       theme: ThemeData(
         primarySwatch: Colors.green,
+        textTheme: TextTheme(
+          headline1: TextStyle(fontSize: 36.0, fontWeight: FontWeight.bold),
+          headline6: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+          bodyText2: TextStyle(fontSize: 14.0),
+        ),
       ),
       home: ProfileScreen(),
     );
@@ -31,7 +37,7 @@ class Profile extends StatelessWidget {
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({Key? key}) : super(key: key);
 
-  FirebaseAuthService _firebaseAuthService = FirebaseAuthService();
+  final FirebaseAuthService _firebaseAuthService = FirebaseAuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -41,12 +47,12 @@ class ProfileScreen extends StatelessWidget {
         backgroundColor: Colors.green,
         title: Text(
           "Profile",
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white),
         ),
         actions: [
           IconButton(
             onPressed: () {},
-            icon: Icon(Icons.notifications_outlined, color: Colors.black),
+            icon: Icon(Icons.notifications_outlined, color: Colors.white),
           )
         ],
       ),
@@ -79,18 +85,14 @@ class ProfileScreen extends StatelessWidget {
                           AssetImage('assets/images/insanberbagi.png'),
                     ),
                     const SizedBox(height: 20),
-                    itemProfile(
-                        'Name', data['username'], CupertinoIcons.person),
+                    itemProfile('Name', data['username'], CupertinoIcons.person),
                     const SizedBox(height: 10),
                     itemProfile('Phone', data['phone'], CupertinoIcons.phone),
                     const SizedBox(height: 10),
-                    itemProfile(
-                        'Address', data['address'], CupertinoIcons.location),
+                    itemProfile('Address', data['address'], CupertinoIcons.location),
                     const SizedBox(height: 10),
                     itemProfile('Email', data['email'], CupertinoIcons.mail),
-                    const SizedBox(
-                      height: 20,
-                    ),
+                    const SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -104,11 +106,14 @@ class ProfileScreen extends StatelessWidget {
                         },
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.all(15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
                         child: const Text('Edit Profile'),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -117,6 +122,9 @@ class ProfileScreen extends StatelessWidget {
                         },
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.all(15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
                         child: const Text('Log Out'),
                       ),
@@ -132,15 +140,22 @@ class ProfileScreen extends StatelessWidget {
   Widget itemProfile(String title, String subtitle, IconData iconData) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.green,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: Offset(0, 3),
+          ),
+        ],
       ),
       child: ListTile(
-        title: Text(title),
+        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(subtitle),
-        leading: Icon(iconData),
+        leading: Icon(iconData, color: Colors.green),
         trailing: Icon(Icons.arrow_forward, color: Colors.grey.shade400),
-        tileColor: Colors.white,
       ),
     );
   }
@@ -153,18 +168,16 @@ class ProfileScreen extends StatelessWidget {
       (route) => false,
     );
   }
-
-  // update item on profile
 }
 
 class EditProfile extends StatelessWidget {
-  EditProfile({super.key});
+  EditProfile({Key? key}) : super(key: key);
 
-  FirebaseAuthService _firebaseAuthService = FirebaseAuthService();
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _phoneController = TextEditingController();
-  TextEditingController _addressController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
+  final FirebaseAuthService _firebaseAuthService = FirebaseAuthService();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -174,12 +187,12 @@ class EditProfile extends StatelessWidget {
         backgroundColor: Colors.green,
         title: Text(
           "Edit Profile",
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.white),
         ),
         actions: [
           IconButton(
             onPressed: () {},
-            icon: Icon(Icons.notifications_outlined, color: Colors.black),
+            icon: Icon(Icons.notifications_outlined, color: Colors.white),
           )
         ],
       ),
@@ -212,25 +225,38 @@ class EditProfile extends StatelessWidget {
                           AssetImage('assets/images/insanberbagi.png'),
                     ),
                     const SizedBox(height: 20),
-                    itemProfile('Name', data['username'], CupertinoIcons.person,
-                        _nameController),
-                    const SizedBox(height: 10),
-                    itemProfile('Phone', data['phone'], CupertinoIcons.phone,
-                        _phoneController),
-                    const SizedBox(height: 10),
-                    itemProfile('Address', data['address'],
-                        CupertinoIcons.location, _addressController),
-                    const SizedBox(height: 10),
-                    itemProfile('Email', data['email'], CupertinoIcons.mail,
-                        _emailController),
-                    const SizedBox(
-                      height: 20,
+                    itemProfile(
+                      'Name',
+                      data['username'],
+                      CupertinoIcons.person,
+                      _nameController,
                     ),
+                    const SizedBox(height: 10),
+                    itemProfile(
+                      'Phone',
+                      data['phone'],
+                      CupertinoIcons.phone,
+                      _phoneController,
+                    ),
+                    const SizedBox(height: 10),
+                    itemProfile(
+                      'Address',
+                      data['address'],
+                      CupertinoIcons.location,
+                      _addressController,
+                    ),
+                    const SizedBox(height: 10),
+                    itemProfile(
+                      'Email',
+                      data['email'],
+                      CupertinoIcons.mail,
+                      _emailController,
+                    ),
+                    const SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          // if empty dont save
                           if (_nameController.text.isNotEmpty) {
                             _firebaseAuthService.changeUserData(
                                 'username', _nameController.text);
@@ -244,7 +270,6 @@ class EditProfile extends StatelessWidget {
                                 'address', _addressController.text);
                           }
 
-                          // reload the page
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
@@ -254,11 +279,14 @@ class EditProfile extends StatelessWidget {
                         },
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.all(15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
                         child: const Text('Save Changes'),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -267,6 +295,9 @@ class EditProfile extends StatelessWidget {
                         },
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.all(15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
                         child: const Text('Cancel'),
                       ),
@@ -279,45 +310,36 @@ class EditProfile extends StatelessWidget {
     );
   }
 
-  Widget itemProfile(String title, String subtitle, IconData iconData,
-      TextEditingController controller) {
+  Widget itemProfile(
+    String title,
+    String subtitle,
+    IconData iconData,
+    TextEditingController controller,
+  ) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.green,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: Offset(0, 3),
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Row(
-          children: [
-            Icon(iconData),
-            SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 5),
-                  TextFormField(
-                    controller: controller,
-                    decoration: InputDecoration(
-                      hintText: subtitle,
-                    ),
-                    onChanged: (value) {
-                      // Handle the input change
-                    },
-                  ),
-                ],
-              ),
-            ),
-            Icon(Icons.arrow_forward, color: Colors.grey.shade400),
-          ],
+      child: ListTile(
+        title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: TextField(
+          controller: controller..text = subtitle,
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            hintText: title,
+          ),
         ),
+        leading: Icon(iconData, color: Colors.green),
+        trailing: Icon(Icons.arrow_forward, color: Colors.grey.shade400),
       ),
     );
   }

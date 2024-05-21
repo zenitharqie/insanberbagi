@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:insanberbagi/models/news_model.dart';
+import 'comment.dart'; // Import the CommentSection
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Beritadetail extends StatefulWidget {
   final NewsData data;
@@ -11,8 +13,13 @@ class Beritadetail extends StatefulWidget {
 }
 
 class _BeritadetailState extends State<Beritadetail> {
-  TextEditingController _commentController = TextEditingController();
-  List<String> comments = [];
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -23,153 +30,66 @@ class _BeritadetailState extends State<Beritadetail> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.all(10),
+          margin: EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.0),
           decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.white,
-                offset: Offset(4, 3),
+                color: Colors.black.withOpacity(0.2),
+                spreadRadius: 2,
+                blurRadius: 8,
+                offset: Offset(0, 4),
               ),
             ],
-            borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(height: 20),
               Container(
                 height: 200,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(16)),
+                  borderRadius: BorderRadius.circular(20),
                   image: DecorationImage(
                     image: NetworkImage(widget.data.urlToImage!),
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
+              SizedBox(height: 16.0),
+              Text(
+                widget.data.title!,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              SizedBox(height: 8.0),
+              Text(
+                widget.data.author!,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
+              ),
+              SizedBox(height: 8.0),
+              Row(
+                
+              ),
+              SizedBox(height: 16.0),
+              Text(
+                'Dalam kehidupan masyarakat yang dinamis, interaksi akan selalu terjadi. Interaksi muncul di tengah-tengah masyarakat yang hidup secara bersama. Interaksi itu disebut sebagai interaksi sosial. Apa itu interaksi sosial? Interaksi sosial adalah sebuah proses ketika orang-orang saling berkomunikasi dan memengaruhi satu sama lain. Ketika berinteraksi, akan terjadi pertukaran ide dan gagasan di antara orang yang sedang berkomunikasi.',
+                style: TextStyle(fontSize: 16, height: 1.5),
+              ),
               SizedBox(height: 10),
-              Container(
-                padding: EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.data.title!,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
+              Text(
+                'Dalam kehidupan masyarakat yang dinamis, interaksi akan selalu terjadi. Interaksi muncul di tengah-tengah masyarakat yang hidup secara bersama. Interaksi itu disebut sebagai interaksi sosial. Apa itu interaksi sosial? Interaksi sosial adalah sebuah proses ketika orang-orang saling berkomunikasi dan memengaruhi satu sama lain. Ketika berinteraksi, akan terjadi pertukaran ide dan gagasan di antara orang yang sedang berkomunikasi.',
+                style: TextStyle(fontSize: 16, height: 1.5),
               ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
-                ),
-                padding: EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Dalam kehidupan masyarakat yang dinamis, interaksi akan selalu terjadi. Interaksi muncul di tengah-tengah masyarakat yang hidup secara bersama. Interaksi itu disebut sebagai interaksi sosial. Apa itu interaksi sosial? Interaksi sosial adalah sebuah proses ketika orang-orang saling berkomunikasi dan memengaruhi satu sama lain. Ketika berinteraksi, akan terjadi pertukaran ide dan gagasan di antara orang yang sedang berkomunikasi.',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      'Dalam kehidupan masyarakat yang dinamis, interaksi akan selalu terjadi. Interaksi muncul di tengah-tengah masyarakat yang hidup secara bersama. Interaksi itu disebut sebagai interaksi sosial. Apa itu interaksi sosial? Interaksi sosial adalah sebuah proses ketika orang-orang saling berkomunikasi dan memengaruhi satu sama lain. Ketika berinteraksi, akan terjadi pertukaran ide dan gagasan di antara orang yang sedang berkomunikasi.',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(25.0),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SizedBox(height: 10),
-                    Container(
-                      padding: EdgeInsets.all(15.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(25.0),
-                        color: Colors.white,
-                      ),
-                      child: TextField(
-                        controller: _commentController,
-                        maxLines: null,
-                        decoration: InputDecoration(
-                          hintText: 'Tulis Komentar...',
-                          border: InputBorder.none,
-                          filled: true,
-                          fillColor: Colors.white,
-                          contentPadding: EdgeInsets.all(0.0),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          comments.add(_commentController.text);
-                          _commentController.clear();
-                        });
-                      },
-                      child: Text('Comment'),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 25),
-              Container(
-                padding: EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Comments',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: comments.length,
-                      itemBuilder: (context, index) {
-                        return Container(
-                          margin: EdgeInsets.symmetric(vertical: 5),
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.grey[200],
-                          ),
-                          child: Text(comments[index]),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
+              SizedBox(height: 16.0),
+              CommentSection(postId: widget.data.title!) 
             ],
           ),
         ),
