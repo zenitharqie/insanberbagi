@@ -160,14 +160,15 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void signOut(BuildContext context) {
-    _firebaseAuthService.signOut();
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
-      (route) => false,
-    );
-  }
+   void signOut(BuildContext context) {
+  _firebaseAuthService.signOut();
+  Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(builder: (context) => LoginPage()),
+    (route) => false,
+  );
+}
+
 }
 
 class EditProfile extends StatelessWidget {

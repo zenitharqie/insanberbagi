@@ -21,7 +21,6 @@ class _NavbarState extends State<Navbar> {
 
   final List<Widget> _pages = [
     HomeScreen(),
-    SearchPage(),
     Explore(),
     Profile(),
   ];
@@ -53,12 +52,8 @@ class _NavbarState extends State<Navbar> {
                 label: "Home",
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.search),
-                label: "Search",
-              ),
-              BottomNavigationBarItem(
                 icon: Icon(Icons.explore),
-                label: "Explore",
+                label: "Charity",
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.account_box),

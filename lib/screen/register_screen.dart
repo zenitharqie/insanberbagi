@@ -1,8 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-
 import 'login_screen.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -11,7 +9,6 @@ class RegisterPage extends StatefulWidget {
   @override
   State<RegisterPage> createState() => _RegisterPageState();
 }
-
 
 class _RegisterPageState extends State<RegisterPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -30,210 +27,153 @@ class _RegisterPageState extends State<RegisterPage> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _phoneController.dispose();
+    _addressController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Container(
-          margin: EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _header(context),
-              Expanded(child: _inputField(context)),
-            ],
-          ),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text("Register"),
+        backgroundColor: Colors.green,
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildInputFields(context),
+            SizedBox(height: 30),
+            _buildRegisterButton(context),
+          ],
         ),
       ),
     );
   }
 
-  Widget _header(context) {
-    return Column(
-      children: [
-        Text(
-          "Register Page",
-          style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
-        ),
-        Text("insanberbagi"),
-      ],
+  Widget _buildInputFields(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildTextField(
+            controller: _nameController,
+            hintText: "Name",
+            prefixIcon: Icons.person,
+          ),
+          SizedBox(height: 10),
+          _buildTextField(
+            controller: _emailController,
+            hintText: "Email",
+            prefixIcon: Icons.email,
+          ),
+          SizedBox(height: 10),
+          _buildTextField(
+            controller: _phoneController,
+            hintText: "Phone Number",
+            prefixIcon: Icons.phone,
+          ),
+          SizedBox(height: 10),
+          _buildTextField(
+            controller: _addressController,
+            hintText: "Address",
+            prefixIcon: Icons.location_on,
+          ),
+          SizedBox(height: 10),
+          _buildTextField(
+            controller: _passwordController,
+            hintText: "Password",
+            prefixIcon: Icons.lock,
+            obscureText: true,
+          ),
+          SizedBox(height: 10),
+          _buildTextField(
+            controller: _confirmPasswordController,
+            hintText: "Confirm Password",
+            prefixIcon: Icons.lock,
+            obscureText: true,
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _inputField(context) {
-    return Form(
-      key: _formKey,
-      child: ListView(
-        shrinkWrap: true,
-        scrollDirection: Axis.vertical,
-        children: [
-          TextFormField(
-            controller: _nameController,
-            decoration: InputDecoration(
-              hintText: "Name",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide.none,
-              ),
-              fillColor: Colors.green.withOpacity(0.12),
-              filled: true,
-              prefixIcon: Icon(Icons.person),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your name';
-              }
-              return null;
-            },
-          ),
-          SizedBox(height: 10),
-          TextFormField(
-            controller: _emailController,
-            decoration: InputDecoration(
-              hintText: "Email",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide.none,
-              ),
-              fillColor: Colors.green.withOpacity(0.12),
-              filled: true,
-              prefixIcon: Icon(Icons.email),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your email';
-              }
-              bool validEmail =
-                  RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value);
-              if (!validEmail) {
-                return 'Please enter a valid email';
-              }
-              return null;
-            },
-          ),
-          SizedBox(height: 10),
-          TextFormField(
-            controller: _phoneController,
-            decoration: InputDecoration(
-              hintText: "Phone Number",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide.none,
-              ),
-              fillColor: Colors.green.withOpacity(0.12),
-              filled: true,
-              prefixIcon: Icon(Icons.phone),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a phone number';
-              }
-              return null;
-            },
-          ),
-          SizedBox(height: 10),
-          TextFormField(
-            controller: _addressController,
-            decoration: InputDecoration(
-              hintText: "Address",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide.none,
-              ),
-              fillColor: Colors.green.withOpacity(0.12),
-              filled: true,
-              prefixIcon: Icon(Icons.location_on),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a address';
-              }
-              return null;
-            },
-          ),
-          SizedBox(height: 10),
-          TextFormField(
-            controller: _passwordController,
-            obscureText: true,
-            decoration: InputDecoration(
-              hintText: "Password",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide.none,
-              ),
-              fillColor: Colors.green.withOpacity(0.12),
-              filled: true,
-              prefixIcon: Icon(Icons.lock),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a password';
-              }
-              return null;
-            },
-          ),
-          SizedBox(height: 10),
-          TextFormField(
-            controller: _confirmPasswordController,
-            obscureText: true,
-            decoration: InputDecoration(
-              hintText: "Confirm Password",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(18),
-                borderSide: BorderSide.none,
-              ),
-              fillColor: Colors.green.withOpacity(0.12),
-              filled: true,
-              prefixIcon: Icon(Icons.lock),
-            ),
-            validator: (value) {
-              if (value != _passwordController.text) {
-                return 'Passwords do not match';
-              }
-              return null;
-            },
-          ),
-          SizedBox(height: 30),
-          ElevatedButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                FirebaseAuth.instance
-                    .createUserWithEmailAndPassword(
-                        email: _emailController.text,
-                        password: _passwordController.text)
-                    .then((value) {
-                  db.collection("users").doc(value.user!.uid).set({
-                    "email": _emailController.text,
-                    "username": _nameController.text,
-                    "phone": _phoneController.text,
-                    "address": _addressController.text,
-                  });
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginPage()),
-                    (route) => false,
-                  );
-                }).catchError((error) {
-                  print("Error: $error");
-                });
-              }
-            },
-            child: Container(
-              width: 200,
-              child: Center(
-                child: Text("Register",
-                    style: TextStyle(fontSize: 20, color: Colors.green)),
-              ),
-            ),
-            style: ElevatedButton.styleFrom(
-              shape: StadiumBorder(),
-              padding: EdgeInsets.symmetric(vertical: 16),
-            ),
-          ),
-        ],
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hintText,
+    required IconData prefixIcon,
+    bool obscureText = false,
+  }) {
+    return TextFormField(
+      controller: controller,
+      obscureText: obscureText,
+      decoration: InputDecoration(
+        hintText: hintText,
+        prefixIcon: Icon(
+          prefixIcon,
+          color: Colors.green,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide(color: Colors.green),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide(color: Colors.green),
+        ),
+        filled: true,
+        fillColor: Colors.green.withOpacity(0.12),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter $hintText';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildRegisterButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        if (_formKey.currentState!.validate()) {
+          FirebaseAuth.instance
+              .createUserWithEmailAndPassword(
+                  email: _emailController.text,
+                  password: _passwordController.text)
+              .then((value) {
+            db.collection("users").doc(value.user!.uid).set({
+              "email": _emailController.text,
+              "username": _nameController.text,
+              "phone": _phoneController.text,
+              "address": _addressController.text,
+            });
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => LoginPage()),
+              (route) => false,
+            );
+          }).catchError((error) {
+            print("Error: $error");
+          });
+        }
+      },
+      child: Text(
+        "Register",
+        style: TextStyle(
+            fontSize: 20, color: Colors.white), 
+      ),
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+        padding: EdgeInsets.symmetric(vertical: 16),
+        backgroundColor: Colors.green,
       ),
     );
   }

@@ -30,11 +30,12 @@ class _CommentSectionState extends State<CommentSection> {
       try {
         DocumentSnapshot userDoc = await usersCollection.doc(user!.uid).get();
         String username = userDoc.get('username') ?? 'Anonymous';
+        Timestamp timestamp = Timestamp.now();
 
         await commentsCollection.add({
           'text': _commentController.text,
           'name': username,
-          'timestamp': FieldValue.serverTimestamp(),
+          'timestamp': timestamp,
           'postId': widget.postId,
         });
         _commentController.clear();
@@ -42,6 +43,15 @@ class _CommentSectionState extends State<CommentSection> {
       } catch (e) {
         print("Error adding comment: $e");
       }
+    }
+  }
+
+  Future<void> _deleteComment(String commentId) async {
+    try {
+      await commentsCollection.doc(commentId).delete();
+      print("Comment deleted successfully");
+    } catch (e) {
+      print("Error deleting comment: $e");
     }
   }
 
@@ -102,12 +112,39 @@ class _CommentSectionState extends State<CommentSection> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Comments',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+              StreamBuilder<QuerySnapshot>(
+                stream: commentsCollection
+                    .where('postId', isEqualTo: widget.postId)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text(
+                      'Comments (loading...)',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    );
+                  }
+                  if (snapshot.hasError) {
+                    print("Error fetching comments count: ${snapshot.error}");
+                    return Text(
+                      'Comments (error)',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    );
+                  }
+                  int commentCount = snapshot.data?.docs.length ?? 0;
+                  return Text(
+                    'Comments ($commentCount)',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                },
               ),
               SizedBox(height: 10),
               StreamBuilder<QuerySnapshot>(
@@ -133,6 +170,7 @@ class _CommentSectionState extends State<CommentSection> {
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       var commentData = snapshot.data!.docs[index];
+                      var commentId = commentData.id;
                       var commentText = commentData['text'];
                       var commentName = commentData['name'];
                       var commentTimestamp =
@@ -155,8 +193,20 @@ class _CommentSectionState extends State<CommentSection> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(commentName,
-                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(commentName,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold)),
+                                IconButton(
+                                  icon: Icon(Icons.delete, color: Colors.red),
+                                  onPressed: () {
+                                    _deleteComment(commentId);
+                                  },
+                                ),
+                              ],
+                            ),
                             SizedBox(height: 5),
                             Text(commentText),
                             SizedBox(height: 5),
@@ -177,4 +227,3 @@ class _CommentSectionState extends State<CommentSection> {
     );
   }
 }
-

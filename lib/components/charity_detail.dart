@@ -10,6 +10,7 @@ class CharityDetail extends StatefulWidget {
 
 class _CharityDetailState extends State<CharityDetail> {
   int likes = 0;
+  final TextEditingController _donationController = TextEditingController();
 
   @override
   void initState() {
@@ -39,6 +40,29 @@ class _CharityDetailState extends State<CharityDetail> {
       });
     } catch (e) {
       print('Error liking charity: $e');
+    }
+  }
+
+  Future<void> _donate() async {
+    final String donationAmount = _donationController.text;
+
+    if (donationAmount.isEmpty) {
+      print("Donation amount cannot be empty");
+      return;
+    }
+
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    final DocumentReference _charityRef =
+        _firestore.collection('utility').doc('charity');
+
+    try {
+      await _charityRef.update({
+        'donations': FieldValue.increment(int.parse(donationAmount))
+      });
+      _donationController.clear();
+      print("Donation successful");
+    } catch (e) {
+      print('Error donating: $e');
     }
   }
 
@@ -146,6 +170,21 @@ class _CharityDetailState extends State<CharityDetail> {
               ),
               SizedBox(height: 20),
               Container(
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildDescriptionText(
+                        'Siapa memberi makan orang yang berpuasa, maka baginya pahala seperti orang yang berpuasa tersebut, tanpa mengurangi pahala orang yang berpuasa itu sedikit pun juga.'),
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+              Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: Colors.white,
@@ -162,6 +201,39 @@ class _CharityDetailState extends State<CharityDetail> {
                         'Siapa memberi makan orang yang berpuasa, maka baginya pahala seperti orang yang berpuasa tersebut, tanpa mengurangi pahala orang yang berpuasa itu sedikit pun juga.'),
                     _buildDescriptionText(
                         'Siapa memberi makan orang yang berpuasa, maka baginya pahala seperti orang yang berpuasa tersebut, tanpa mengurangi pahala orang yang berpuasa itu sedikit pun juga.'),
+                    SizedBox(height: 20),
+                    TextField(
+                      controller: _donationController,
+                      decoration: InputDecoration(
+                        labelText: 'Jumlah Donasi...',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        filled: true,
+                        fillColor: Colors.green[50],
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                    SizedBox(height: 20),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: _donate,
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25.0),
+                          ),
+                          backgroundColor: Colors.green,
+                          padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                        ),
+                        child: Text(
+                          'Donate',
+                          
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
