@@ -826,15 +826,15 @@ PODS:
     - firebase_core
     - Flutter
     - nanopb (< 2.30910.0, >= 2.30908.0)
-  - Firebase/Auth (10.22.0):
+  - Firebase/Auth (10.25.0):
     - Firebase/CoreOnly
     - FirebaseAuth (~> 10.22.0)
-  - Firebase/CoreOnly (10.22.0):
+  - Firebase/CoreOnly (10.25.0):
     - FirebaseCore (= 10.22.0)
-  - Firebase/Firestore (10.22.0):
+  - Firebase/Firestore (10.25.0):
     - Firebase/CoreOnly
     - FirebaseFirestore (~> 10.22.0)
-  - Firebase/Storage (10.22.0):
+  - Firebase/Storage (10.25.0):
     - Firebase/CoreOnly
     - FirebaseStorage (~> 10.22.0)
   - firebase_auth (4.18.0):
