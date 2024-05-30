@@ -1,4 +1,3 @@
-
 class CharityData{
   String? title;
   String? author;

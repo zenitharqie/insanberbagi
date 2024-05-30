@@ -122,4 +122,3 @@ class _CharityState extends State<Charity> {
     );
   }
 }
-

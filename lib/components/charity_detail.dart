@@ -281,3 +281,4 @@ class _CharityDetailState extends State<CharityDetail> {
     );
   }
 }
+

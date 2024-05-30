@@ -18,23 +18,32 @@ class _CommentSectionState extends State<CommentSection> {
   final CollectionReference usersCollection =
       FirebaseFirestore.instance.collection('users');
   User? user;
+  String? userName;
 
   @override
   void initState() {
     super.initState();
     user = FirebaseAuth.instance.currentUser;
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    if (user != null) {
+      DocumentSnapshot userDoc = await usersCollection.doc(user!.uid).get();
+      setState(() {
+        userName = userDoc.get('username') ?? 'Anonymous';
+      });
+    }
   }
 
   Future<void> _addComment() async {
-    if (_commentController.text.isNotEmpty && user != null) {
+    if (_commentController.text.isNotEmpty && user != null && userName != null) {
       try {
-        DocumentSnapshot userDoc = await usersCollection.doc(user!.uid).get();
-        String username = userDoc.get('username') ?? 'Anonymous';
         Timestamp timestamp = Timestamp.now();
 
         await commentsCollection.add({
           'text': _commentController.text,
-          'name': username,
+          'name': userName,  // Store the user's name with the comment
           'timestamp': timestamp,
           'postId': widget.postId,
         });
@@ -46,12 +55,16 @@ class _CommentSectionState extends State<CommentSection> {
     }
   }
 
-  Future<void> _deleteComment(String commentId) async {
-    try {
-      await commentsCollection.doc(commentId).delete();
-      print("Comment deleted successfully");
-    } catch (e) {
-      print("Error deleting comment: $e");
+  Future<void> _deleteComment(String commentId, String commentOwnerName) async {
+    if (userName != null && userName == commentOwnerName) {
+      try {
+        await commentsCollection.doc(commentId).delete();
+        print("Comment deleted successfully");
+      } catch (e) {
+        print("Error deleting comment: $e");
+      }
+    } else {
+      print("You can only delete your own comments");
     }
   }
 
@@ -199,12 +212,14 @@ class _CommentSectionState extends State<CommentSection> {
                                 Text(commentName,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold)),
-                                IconButton(
-                                  icon: Icon(Icons.delete, color: Colors.red),
-                                  onPressed: () {
-                                    _deleteComment(commentId);
-                                  },
-                                ),
+                                if (userName != null &&
+                                    userName == commentName)
+                                  IconButton(
+                                    icon: Icon(Icons.delete, color: Colors.red),
+                                    onPressed: () {
+                                      _deleteComment(commentId, commentName);
+                                    },
+                                  ),
                               ],
                             ),
                             SizedBox(height: 5),

@@ -1,60 +1,88 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
 
 class FirebaseAuthService {
-  FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
-  Future<User?> singupWithEmailAndPassword(
-      String email, String password) async {
+  // Sign up with email and password
+  Future<User?> signupWithEmailAndPassword(String email, String password) async {
     try {
       UserCredential credential = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       return credential.user;
     } catch (e) {
-      print("Error");
+      print("Error: $e");
+      return null;
     }
-    return null;
   }
 
-  // Future<User?> singinWithEmailAndPassword(
-  //     String email, String password) async {
-  //   try {
-  //     UserCredential credential = await _auth.createUserWithEmailAndPassword(
-  //         email: email, password: password);
-  //     return credential.user;
-  //   } catch (e) {
-  //     print("Error");
-  //   }
-  //   return null;
-  // }
+  // Sign in with email and password
+  Future<User?> signinWithEmailAndPassword(String email, String password) async {
+    try {
+      UserCredential credential = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      return credential.user;
+    } catch (e) {
+      print("Error: $e");
+      return null;
+    }
+  }
 
-  // get current user uid
+  // Get current user UID
   String? getCurrentUserUid() {
-    return _auth.currentUser!.uid;
+    return _auth.currentUser?.uid;
   }
 
-  // signout
+  // Sign out
   Future<void> signOut() async {
     await _auth.signOut();
   }
 
-
-  // getall data from users storage that have uid == current user
+  // Get user details from Firestore
   Future<DocumentSnapshot<Map<String, dynamic>>> getUserDetails() async {
-    return await FirebaseFirestore.instance
-        .collection("users")
-        .doc(getCurrentUserUid())
-        .get();
+    String? uid = getCurrentUserUid();
+    if (uid != null) {
+      return await _firestore.collection("users").doc(uid).get();
+    } else {
+      throw Exception("No user is signed in");
+    }
   }
 
-  Future<void> changeUserData(String field, newValue) async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(getCurrentUserUid())
-        .update({
-      field: newValue,
-    });
+  // Update user data in Firestore
+  Future<void> changeUserData(String field, String newValue) async {
+    String? uid = getCurrentUserUid();
+    if (uid != null) {
+      await _firestore.collection('users').doc(uid).update({
+        field: newValue,
+      });
+    } else {
+      throw Exception("No user is signed in");
+    }
   }
 
-  // update user data
+  // Upload profile picture to Firebase Storage and update Firestore
+  Future<void> uploadProfilePicture(File image) async {
+    try {
+      String? uid = getCurrentUserUid();
+      if (uid != null) {
+        Reference storageRef = _storage.ref().child('profile_pictures').child(uid);
+        UploadTask uploadTask = storageRef.putFile(image);
+        TaskSnapshot taskSnapshot = await uploadTask;
+        String downloadURL = await taskSnapshot.ref.getDownloadURL();
+
+        await _firestore.collection('users').doc(uid).update({
+          'photoURL': downloadURL,
+        });
+      } else {
+        throw Exception("No user is signed in");
+      }
+    } catch (e) {
+      print("Error uploading profile picture: $e");
+      throw e;
+    }
+  }
 }
