@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'login_screen.dart';
+import 'package:insanberbagi/widget/navbar.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -133,6 +133,12 @@ class _RegisterPageState extends State<RegisterPage> {
         if (value == null || value.isEmpty) {
           return 'Please enter $hintText';
         }
+        if (hintText == "Password" && value.length < 6) {
+          return 'Password must be at least 6 characters long';
+        }
+        if (hintText == "Confirm Password" && value != _passwordController.text) {
+          return 'Passwords do not match';
+        }
         return null;
       },
     );
@@ -155,7 +161,7 @@ class _RegisterPageState extends State<RegisterPage> {
             });
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => LoginPage()),
+              MaterialPageRoute(builder: (context) => Navbar()),
               (route) => false,
             );
           }).catchError((error) {
