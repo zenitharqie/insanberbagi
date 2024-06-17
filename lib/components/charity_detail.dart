@@ -10,21 +10,23 @@ class CharityDetail extends StatefulWidget {
 
 class _CharityDetailState extends State<CharityDetail> {
   int likes = 0;
+  int donatedAmount = 0;
   final TextEditingController _donationController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _fetchLikes();
+    _fetchData();
   }
 
-  Future<void> _fetchLikes() async {
+  Future<void> _fetchData() async {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
     final DocumentSnapshot<Map<String, dynamic>> snapshot =
         await _firestore.collection('utility').doc('charity').get();
 
     setState(() {
       likes = snapshot.data()?['like'] ?? 0;
+      donatedAmount = snapshot.data()?['donations'] ?? 0;
     });
   }
 
@@ -58,6 +60,9 @@ class _CharityDetailState extends State<CharityDetail> {
     try {
       await _charityRef.update({
         'donations': FieldValue.increment(int.parse(donationAmount))
+      });
+      setState(() {
+        donatedAmount += int.parse(donationAmount);
       });
       _donationController.clear();
       print("Donation successful");
@@ -121,7 +126,7 @@ class _CharityDetailState extends State<CharityDetail> {
                     ),
                     SizedBox(height: 10),
                     Text(
-                      "Rp80.000.000",
+                      "Rp$donatedAmount",
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 18,
@@ -136,7 +141,7 @@ class _CharityDetailState extends State<CharityDetail> {
                     ),
                     SizedBox(height: 20),
                     LinearProgressIndicator(
-                      value: 80 / 100,
+                      value: donatedAmount / 100000000,
                       backgroundColor: Colors.grey[300],
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
                     ),
@@ -281,4 +286,3 @@ class _CharityDetailState extends State<CharityDetail> {
     );
   }
 }
-
