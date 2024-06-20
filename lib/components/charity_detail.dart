@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:insanberbagi/models/charity_model.dart';
 
 class CharityDetail extends StatefulWidget {
-  const CharityDetail({Key? key}) : super(key: key);
+  final CharityData charityData;
+
+  const CharityDetail({Key? key, required this.charityData}) : super(key: key);
 
   @override
   _CharityDetailState createState() => _CharityDetailState();
@@ -20,23 +23,27 @@ class _CharityDetailState extends State<CharityDetail> {
   }
 
   Future<void> _fetchData() async {
-    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-    final DocumentSnapshot<Map<String, dynamic>> snapshot =
-        await _firestore.collection('utility').doc('charity').get();
+    try {
+      final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+      final DocumentSnapshot<Map<String, dynamic>> snapshot =
+          await _firestore.collection('charities').doc(widget.charityData.title).get();
 
-    setState(() {
-      likes = snapshot.data()?['like'] ?? 0;
-      donatedAmount = snapshot.data()?['donations'] ?? 0;
-    });
+      setState(() {
+        likes = snapshot.data()?['likes'] ?? 0;
+        donatedAmount = snapshot.data()?['donatedAmount'] ?? 0;
+      });
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
   }
 
   Future<void> _likeCharity() async {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
     final DocumentReference _charityRef =
-        _firestore.collection('utility').doc('charity');
+        _firestore.collection('charities').doc(widget.charityData.title);
 
     try {
-      await _charityRef.update({'like': FieldValue.increment(1)});
+      await _charityRef.update({'likes': FieldValue.increment(1)});
       setState(() {
         likes++;
       });
@@ -55,14 +62,15 @@ class _CharityDetailState extends State<CharityDetail> {
 
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
     final DocumentReference _charityRef =
-        _firestore.collection('utility').doc('charity');
+        _firestore.collection('charities').doc(widget.charityData.title);
 
     try {
+      int amount = int.parse(donationAmount);
       await _charityRef.update({
-        'donations': FieldValue.increment(int.parse(donationAmount))
+        'donatedAmount': FieldValue.increment(amount)
       });
       setState(() {
-        donatedAmount += int.parse(donationAmount);
+        donatedAmount += amount;
       });
       _donationController.clear();
       print("Donation successful");
@@ -75,7 +83,7 @@ class _CharityDetailState extends State<CharityDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Charity Detail'),
+        title: Text(widget.charityData.title ?? 'Charity Detail'),
         backgroundColor: Colors.green,
       ),
       body: SingleChildScrollView(
@@ -100,9 +108,7 @@ class _CharityDetailState extends State<CharityDetail> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(16)),
                   image: DecorationImage(
-                    image: NetworkImage(
-                      "https://kitabisa.com/_next/image?url=https%3A%2F%2Fimgix.kitabisa.com%2Fbae857c6-7a79-448a-8161-9b39ecac6ebc.jpg%3Fauto%3Dformat%26fm%3Dpjpg%26ch%3DWidth%2CDPR%2CSave-Data%2CViewport-Width&w=1080&q=75",
-                    ),
+                    image: NetworkImage(widget.charityData.urlToImage!),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -118,7 +124,7 @@ class _CharityDetailState extends State<CharityDetail> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Pahala 2x Lipat! Sedekah Ifthar Tuk Yatim dan Dhuafa",
+                      widget.charityData.title!,
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -232,10 +238,10 @@ class _CharityDetailState extends State<CharityDetail> {
                         ),
                         child: Text(
                           'Donate',
-                          
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 16),
+                            fontSize: 16,
+                          ),
                         ),
                       ),
                     ),
@@ -249,30 +255,6 @@ class _CharityDetailState extends State<CharityDetail> {
     );
   }
 
-  Widget _buildStatistic(String value, String label) {
-    return Container(
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 5),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildDescriptionText(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -280,7 +262,6 @@ class _CharityDetailState extends State<CharityDetail> {
         text,
         style: TextStyle(
           fontSize: 16,
-          color: Colors.black,
         ),
       ),
     );

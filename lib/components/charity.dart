@@ -18,7 +18,7 @@ class _CharityState extends State<Charity> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CharityDetail(), // Pass the postId here
+            builder: (context) => CharityDetail(charityData: widget.data), // Pass the CharityData object here
           ),
         );
       },
